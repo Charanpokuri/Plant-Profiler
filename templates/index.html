@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Crop Information System{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">🌾 Crop Information Retrieval System</h1>
+            <p class="hero-subtitle">
+                Upload an image of your crop and get detailed information about growing conditions, 
+                care instructions, and harvest timing using advanced AI technology.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('upload') }}" class="btn btn-primary btn-large">
+                    📸 Start Analysis
+                </a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>AI Recognition</h3>
+                    <p>Advanced CNN model identifies crops with high accuracy</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Detailed Info</h3>
+                    <p>Get comprehensive growing and care information</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>History Tracking</h3>
+                    <p>Keep track of all your crop analyses</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Expert Tips</h3>
+                    <p>Professional farming advice and best practices</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="info-section">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Upload Image</h3>
+                    <p>Take a clear photo of your crop or upload an existing image</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>AI Analysis</h3>
+                    <p>Our advanced CNN model analyzes and identifies the crop</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Get Results</h3>
+                    <p>Receive detailed information about growing conditions and care</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

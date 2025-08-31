@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Image - Crop Information System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>🌾 Crop Analysis</h1>
+        <p>Upload an image to analyze your crops and get detailed information.</p>
+    </div>
+    
+    <div class="upload-section">
+        <div class="upload-card">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📸</div>
+                <h3>Upload Crop Image</h3>
+                <p>Drag and drop an image here, or click to select</p>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                    Choose Image
+                </button>
+            </div>
+            
+            <div class="image-preview" id="imagePreview" style="display: none;">
+                <img id="previewImg" src="" alt="Preview">
+                <div class="preview-actions">
+                    <button type="button" class="btn btn-success" id="analyzeBtn">
+                        🔍 Predict Crop
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="changeBtn">
+                        🔄 Change Image
+                    </button>
+                </div>
+            </div>
+            
+            <div class="loading-state" id="loadingState" style="display: none;">
+                <div class="spinner"></div>
+                <h3>Analyzing your crop...</h3>
+                <p>Please wait while our AI processes the image</p>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section" id="resultSection" style="display: none;">
+                <div class="result-content">
+                    <div class="result-image">
+                        <div class="image-card">
+                            <img id="resultImg" src="" alt="Analyzed crop image">
+                            <div class="image-info">
+                                <div class="prediction-badge">
+                                    <span id="confidenceText">95% Confidence</span>
+                                </div>
+                                <p class="analysis-date" id="analysisDate">Analyzed just now</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="crop-identification">
+                            <h2>🌱 Identified Crop</h2>
+                            <div class="crop-name">
+                                <h3 id="cropName">Loading...</h3>
+                                <p class="scientific-name" id="scientificName">Loading...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="crop-info-grid" id="cropInfoGrid">
+                            <!-- Crop information will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-actions">
+                    <button type="button" class="btn btn-primary" id="analyzeAnotherBtn">
+                        📸 Analyze Another Image
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        🏠 Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-stats">
+        <div class="stat-card">
+            <div class="stat-icon">🌱</div>
+            <div class="stat-content">
+                <h3>Supported Crops</h3>
+                <p>Sugarcane, Maize, Tomato, Sunflower, Cherry, Jowar, Wheat, Cotton, Rice, Chilli, Coconut</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+                <h3>AI Accuracy</h3>
+                <p>Our CNN model achieves high accuracy in crop identification</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>Instant Results</h3>
+                <p>Get detailed crop information and growing tips immediately</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const imageInput = document.getElementById('imageInput');
+const uploadArea = document.getElementById('uploadArea');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const changeBtn = document.getElementById('changeBtn');
+const loadingState = document.getElementById('loadingState');
+const resultSection = document.getElementById('resultSection');
+const analyzeAnotherBtn = document.getElementById('analyzeAnotherBtn');
+
+// Drag and drop functionality
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('drag-over');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleImageSelect(files[0]);
+    }
+});
+
+uploadArea.addEventListener('click', () => {
+    imageInput.click();
+});
+
+imageInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleImageSelect(e.target.files[0]);
+    }
+});
+
+function handleImageSelect(file) {
+    if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+    }
+    
+    if (file.size > 16 * 1024 * 1024) {
+        alert('File size must be less than 16MB.');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        uploadArea.style.display = 'none';
+        imagePreview.style.display = 'block';
+        resultSection.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+changeBtn.addEventListener('click', () => {
+    uploadArea.style.display = 'block';
+    imagePreview.style.display = 'none';
+    resultSection.style.display = 'none';
+    imageInput.value = '';
+});
+
+analyzeAnotherBtn.addEventListener('click', () => {
+    uploadArea.style.display = 'block';
+    imagePreview.style.display = 'none';
+    resultSection.style.display = 'none';
+    imageInput.value = '';
+});
+
+analyzeBtn.addEventListener('click', () => {
+    const file = imageInput.files[0];
+    if (!file) {
+        alert('Please select an image first.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    imagePreview.style.display = 'none';
+    loadingState.style.display = 'block';
+    
+    fetch('/predict', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingState.style.display = 'none';
+        
+        if (data.success) {
+            displayResults(data);
+        } else {
+            alert('Error: ' + (data.error || 'Failed to analyze image'));
+            imagePreview.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while analyzing the image.');
+        loadingState.style.display = 'none';
+        imagePreview.style.display = 'block';
+    });
+});
+
+function displayResults(data) {
+    // Set result image
+    document.getElementById('resultImg').src = `/static/uploads/${data.image_path}`;
+    
+    // Set confidence
+    document.getElementById('confidenceText').textContent = `${(data.confidence * 100).toFixed(1)}% Confidence`;
+    
+    // Set crop name
+    document.getElementById('cropName').textContent = data.predicted_crop;
+    
+    // Set scientific name and crop info
+    const cropInfoGrid = document.getElementById('cropInfoGrid');
+    
+    if (data.crop_info) {
+        document.getElementById('scientificName').textContent = data.crop_info[1];
+        
+        cropInfoGrid.innerHTML = `
+            <div class="crop-info-grid">
+    <div class="info-card">
+        <div class="info-icon">⏳</div>
+        <h4>Duration of growth</h4>
+        <p>${ data.crop_info[3] }</p>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">🌱</div>
+        <h4>Soil Requirement</h4>
+        <p>${ data.crop_info[3] }</p>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">💧</div>
+        <h4>Water Requirements</h4>
+        <p>${ data.crop_info[2] }</p>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">🌡️</div>
+        <h4>Temperature Tolerance</h4>
+        <p>${ data.crop_info[5] }</p>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">🌸</div>
+        <h4>Pollination</h4>
+        <p>${ data.crop_info[6] }</p>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">🌾</div>
+        <h4>Yield Potential</h4>
+        <p>${ data.crop_info[7] }</p>
+    </div>
+    
+    <div class="info-card">
+        <div class="info-icon">📦</div>
+        <h4>Use</h4>
+        <p>${ data.crop_info[8] }</p>
+    </div>
+</div>
+
+        `;
+    } else {
+        document.getElementById('scientificName').textContent = 'Scientific name not available';
+        cropInfoGrid.innerHTML = `
+            <div class="no-info-message">
+                <p>🔍 Detailed information for this crop is not available in our database yet.</p>
+            </div>
+        `;
+    }
+    
+    // Show results
+    resultSection.style.display = 'block';
+}
+</script>
+{% endblock %}
